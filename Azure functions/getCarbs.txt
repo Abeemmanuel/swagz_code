@@ -1,0 +1,87 @@
+#load "serialize.csx"
+
+#r "Newtonsoft.Json"
+#r "System.Configuration"
+#r "System.Data"
+#load "..\sharedCode\bsmartClasses.csx"
+
+using System.Net;
+
+using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.Extensions.Primitives;
+
+using Newtonsoft.Json;
+
+using System.Text;
+
+using System.Data;
+
+using System.Linq;
+
+using System.Configuration;
+
+using System.Data.SqlClient;
+
+using System.Collections.Generic;
+
+public static async Task<HttpResponseMessage> Run(HttpRequest req, ILogger log)
+{
+    log.LogInformation("getCarbs function is processing a request.");
+
+    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+    
+    dynamic data = JsonConvert.DeserializeObject(requestBody);
+ 
+    try{
+            var str = Environment.GetEnvironmentVariable("sqlConn");
+            using (SqlConnection conn = new SqlConnection(str))
+            {
+                conn.Open();
+                SqlDataReader dataReader;
+                string text = "select top 1 coalesce(r.restaurant_name,'Unknown') as restaurant,rf.food_desc as food,rf.food_carbs as carbs "+
+                "from dbo.restaurant_food rf "+
+                "left outer join dbo.restaurants r  "+
+				"on rf.restaurant_name = r.restaurant_name   "+
+				"and ABS(r.gps_longitude-  ("+data.lon+")) + ABS(r.gps_lattitude-("+data.lat+")) < 0.0006 "+
+                "where rf.food_desc like '%"+data.tag_name+"%' ";
+
+                log.LogInformation(text);
+                
+                using (SqlCommand cmd = new SqlCommand(text, conn))
+                {
+                    // Set the command to execute stored proc
+                    cmd.CommandType = CommandType.Text;
+                    
+                    // Set the parameters                         
+                    dataReader = cmd.ExecuteReader();
+                    var r = Serialize(dataReader);
+
+                    string json = JsonConvert.SerializeObject(r, Formatting.Indented);
+                    // Execute the command and log the # rows affected.
+                    //await cmd.ExecuteNonQueryAsync();
+
+                    //string procReturn = cmd.Parameters["@procReturn"].Value.ToString();
+                    string procReturn = "SUCCESS";
+                    if(procReturn!="SUCCESS")
+                    throw new System.ArgumentException(procReturn); 
+
+                    log.LogInformation("addEventData HTTP trigger function is done processing an event");
+
+                    return new HttpResponseMessage(HttpStatusCode.OK){
+                               Content = new StringContent(json, Encoding.UTF8, "application/json")
+                    };
+
+                }  
+            }    
+    } 
+    catch (Exception e) 
+            {
+                
+                log.LogInformation("Exception caught :"+e.Message.ToString());
+               //  throw new System.ArgumentException("Could not write to database"); 
+                return new HttpResponseMessage(HttpStatusCode.BadRequest){
+                  Content = new StringContent(JsonConvert.SerializeObject($"The following SqlException happened: {e.Message}"), Encoding.UTF8, "application/json")
+                };
+            }    
+}

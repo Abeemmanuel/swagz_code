@@ -1,0 +1,29 @@
+<mat-nav-list>
+    <a *ngIf="!isAuth" mat-list-item routerLink="/signup" (click)="onClose()">
+      <mat-icon>face</mat-icon>
+      <span class="nav-caption">Signup</span>
+    </a>
+    <a *ngIf="!isAuth" mat-list-item routerLink="/login" (click)="onClose()">
+      <mat-icon>input</mat-icon>
+      <span class="nav-caption">Login</span>
+    </a>
+    <a *ngIf="isAuth" mat-list-item routerLink="/home" (click)="onClose()">
+      <mat-icon>cloud_upload</mat-icon>
+      <span class="nav-caption">Upload</span>
+    </a>
+    <a *ngIf="isAuth" mat-list-item routerLink="/upload" (click)="onClose()">
+      <mat-icon>cloud_queue</mat-icon>
+      <span class="nav-caption">Swag</span>
+    </a>
+    <a *ngIf="isAuth" mat-list-item (click)="onLogout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span class="nav-caption">Logout</span>
+    </a>
+    <!-- <mat-list-item>
+      <button mat-icon-button (click)="onLogout()" *ngIf="isAuth">
+        <mat-icon>close</mat-icon>
+        <span class="nav-caption">Logout</span>
+      </button>
+    </mat-list-item> -->
+  </mat-nav-list>
+  

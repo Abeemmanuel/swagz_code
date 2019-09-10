@@ -1,0 +1,36 @@
+<section>
+    <form
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="10px"
+      [formGroup]="settingsForm"
+      (ngSubmit)="save()">
+      <mat-form-field>
+        <input      
+          matInput
+          placeholder="Your First Name"
+          formControlName="firstName">
+        <mat-hint>Please enter a valid email.</mat-hint>
+        <mat-error>Invalid or missing email.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          required
+          placeholder="Your Last Name"
+          formControlName="lastName">
+        <mat-hint>Please enter your password.</mat-hint>
+        <mat-error>Missing password.</mat-error>
+      </mat-form-field>
+  
+      <button type="submit" mat-raised-button color="primary" [disabled]="settingsForm.invalid">Save Settings</button>
+    </form>
+
+
+       
+      <label > <input type="file" (change)="selectFile($event)">
+      </label>
+       
+      <button [disabled]="!selectedFiles" (click)="upload()">Upload</button>
+  
+  </section>

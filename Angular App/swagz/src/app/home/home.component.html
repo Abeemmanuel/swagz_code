@@ -1,0 +1,77 @@
+<p></p>
+<section fxLayoutAlign="center center" fxLayout="column">
+    
+    <p>Step 1: Click on <b>Choose File</b> to upload or take a picture of food</p>
+    <p>Step 2: Click on <b>Get Nutrition Info</b></p>
+    <p>Step 3: <b>Save</b> or <b>Override</b> it</p>
+
+</section>
+<p></p>
+
+<div class="container">
+    <form fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" #f="ngForm" (ngSubmit)="upload()">
+        <p></p>
+        <p></p>
+      <input type="file" capture="camera" accept="image/*" #file (change)="updateFiles(file.files)">
+      <p></p><p></p>
+      <p></p>
+      <button type="submit" mat-raised-button color="primary">Upload Picture</button>
+      
+    </form>
+  </div>
+  <p></p>
+  <section fxLayoutAlign="center center">
+      <p *ngIf="percent > 0">Picture Upload Progress: {{ percent }}%</p>
+  </section>
+  <p></p>
+  <p></p>
+
+  <section fxLayoutAlign="center center">
+      <button (click)="getImageTags()" mat-raised-button color="primary">Get Nutrition Info</button>
+  </section>
+  <p></p>
+  <p></p>
+
+  <div class="container">
+      <p *ngIf="errorMessage!=''">Sorry, we couldn't find any food item in the picutre</p>
+  </div>
+      <div class='table-responsive'>
+          <table class='table'
+                 *ngIf="foodDetails && foodDetails.length">
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>Food</th>
+                <th>Carbs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let food of foodDetails'>
+                <td>{{ food.restaurant }}</td>
+                <td>{{ food.food }}</td>
+                <td>{{ food.carbs }}</td>
+      
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+  <section fxLayoutAlign="center center">
+      <mat-form-field>
+          <mat-label>Override Carbs</mat-label>
+          <mat-select #carbGuess value="15">
+            <mat-option value="15">15</mat-option>
+            <mat-option value="30">30</mat-option>
+            <mat-option value="45">45</mat-option>
+            <mat-option value="60">60</mat-option>
+            <mat-option value="75">75</mat-option>
+            <mat-option value="90">90</mat-option>
+          </mat-select>
+        </mat-form-field>
+  </section>
+
+  <section fxLayoutAlign="center center">
+      <button (click)="saveToNightscout()" mat-raised-button color="primary">Save to Nightscout</button>
+  </section>
+
+  
